@@ -13,7 +13,8 @@ app.use(cors());
 const port = 5000;
 
 app.get('/', (req, res) => {
-    res.send("hello from db it's working");
+    res.send('hello from db it is working')
 })
 
-app.listen(process.env.PORT || port);
+
+app.listen(process.env.PORT || port)
