@@ -23,11 +23,21 @@ app.get('/', (req, res) => {
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
     const reviewCollection = client.db("motorCycle").collection("review");
+    const userCollection = client.db("motorCycle").collection("allUser");
     
     app.post('/addReview', (req, res) => {
         const review = req.body;
 
         reviewCollection.insertOne(review)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
+    });
+    
+    app.post('/addUser', (req, res) => {
+        const review = req.body;
+
+        userCollection.insertOne(review)
             .then(result => {
                 res.send(result.insertedCount > 0)
             })
