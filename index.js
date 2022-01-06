@@ -48,7 +48,14 @@ client.connect(err => {
         .toArray((err, documents) => {
             res.send(documents)
         })
-    })
+    });
+
+    app.get('/getUser/:token', (req, res) => {
+        userCollection.find({token: req.params.token})
+        .toArray((err, documents) => {
+            res.send(documents)
+        })
+    });
 
  });
 
