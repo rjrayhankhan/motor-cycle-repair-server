@@ -24,6 +24,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
     const reviewCollection = client.db("motorCycle").collection("review");
     const userCollection = client.db("motorCycle").collection("allUser");
+    const serviceCollection = client.db("motorCycle").collection("service");
+    const adminCollection = client.db("motorCycle").collection("admin");
     
     app.post('/addReview', (req, res) => {
         const review = req.body;
@@ -42,6 +44,24 @@ client.connect(err => {
                 res.send(result.insertedCount > 0)
             })
     });
+    
+    app.post('/service', (req, res) => {
+        const allService = req.body;
+
+        serviceCollection.insertOne(allService)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
+    });
+    
+    app.post('/admin', (req, res) => {
+        const allService = req.body;
+
+        adminCollection.insertOne(allService)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
+    });
 
     app.get('/getReview', (req, res) => {
         reviewCollection.find({})
@@ -52,6 +72,13 @@ client.connect(err => {
 
     app.get('/getUser/:token', (req, res) => {
         userCollection.find({token: req.params.token})
+        .toArray((err, documents) => {
+            res.send(documents)
+        })
+    });
+
+    app.get('/getService', (req, res) => {
+        serviceCollection.find({})
         .toArray((err, documents) => {
             res.send(documents)
         })
