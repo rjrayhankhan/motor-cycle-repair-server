@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.static('images'));
 app.use(fileUpload());
 
-const port = 5000;
+const port = 5500;
 
 
 app.get('/', (req, res) => {
