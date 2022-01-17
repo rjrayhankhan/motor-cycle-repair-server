@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const MongoClient = require('mongodb').MongoClient;
 require('dotenv').config()
 
@@ -11,6 +12,8 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static('images'));
+app.use(fileUpload());
 
 const port = 5000;
 
@@ -25,7 +28,8 @@ client.connect(err => {
     const reviewCollection = client.db("motorCycle").collection("review");
     const userCollection = client.db("motorCycle").collection("allUser");
     const serviceCollection = client.db("motorCycle").collection("service");
-    const adminCollection = client.db("motorCycle").collection("admin");
+    const adminCollection = client.db("motorCycle").collection("admin"); 
+    const servicesCollection = client.db("motorCycle").collection("services");
     
     app.post('/addReview', (req, res) => {
         const review = req.body;
@@ -55,9 +59,27 @@ client.connect(err => {
     });
     
     app.post('/admin', (req, res) => {
-        const allService = req.body;
+        const admin = req.body;
 
-        adminCollection.insertOne(allService)
+        adminCollection.insertOne(admin)
+            .then(result => {
+                res.send(result.insertedCount > 0)
+            })
+    });
+    
+    app.post('/addServices', (req, res) => {
+        const file = req.files.file;
+        const services = req.body;
+        console.log(file, services)
+        file.mv(`${__dirname}/images/${file.name}`, err => {
+            if(err){
+                console.log(err);
+                return res.status(500).send({msg: 'Failed to upload image'});
+            }
+            return res.send({name: file.name, path: `/${file.name}`})
+        });
+
+        servicesCollection.insertOne()
             .then(result => {
                 res.send(result.insertedCount > 0)
             })
@@ -81,6 +103,13 @@ client.connect(err => {
         serviceCollection.find({})
         .toArray((err, documents) => {
             res.send(documents)
+        })
+    });
+
+    app.get('/getAdmin', (req, res) => {
+        adminCollection.find({})
+        .toArray((err, documents) => { 
+            res.send(documents[0]) 
         })
     });
 
